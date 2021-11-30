@@ -7,7 +7,8 @@ from constants import *
 from tileset import ColoredTileset
 from level import Level
 from menu import Text, ConfirmationBox, TextBox, Inventory
-from actor import Player, Point, NPC
+from actor import Player, Point
+from npc import NPC
 from item import ItemDB
 
 
@@ -116,12 +117,19 @@ while game_state != GAME_FINISHED:
             if event.key == pygame.K_LSHIFT:
                 shift_pressed = True
 
+            if event.key >= pygame.K_1 and event.key <= pygame.K_7:
+                for item in player.inventory:
+                    item.equipped = False
+                player.inventory[event.key - pygame.K_1].equipped = True
+                player.update_damage()
+
             if event.key == pygame.K_g:
                 if len(player.inventory) >= 7:
                     continue
                 for item in levels[player.level].items:
                     if item.pos.x == player.pos.x and item.pos.y == player.pos.y and len(player.inventory) < 7:
                         player.inventory.append(item)
+                        player.update_damage()
                         levels[player.level].items.remove(item)
                 
             if event.key == pygame.K_q:
@@ -146,8 +154,8 @@ while game_state != GAME_FINISHED:
             ny = player.pos.y + vel_y + vel_y_m
             for actor in levels[player.level].actors:
                 if actor.pos.x == nx and actor.pos.y == ny and actor != player:
-                    actor.pos.x += (actor.pos.x - player.pos.x) * player.get_damage() // 2
-                    actor.pos.y += (actor.pos.y - player.pos.y) * player.get_damage() // 2
+                    actor.pos.x += int((actor.pos.x - player.pos.x) * player.get_damage() / 2)
+                    actor.pos.y += int((actor.pos.y - player.pos.y) * player.get_damage() / 2)
                     actor.receive_damage(player.get_damage(), player)
         else:
             player.pos.x += vel_x + vel_x_m

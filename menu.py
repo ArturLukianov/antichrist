@@ -97,4 +97,13 @@ class Inventory(Menu):
             surface.blit(tileset.get_tile(ord(letter)), ((1 + i) * TILE_SIZE, 1 * TILE_SIZE))
         for ind, item in enumerate(self.target.inventory):
             for i, letter in enumerate(str(ind + 1) + ") " + item.name):
-                surface.blit(tileset.get_tile(ord(letter)), ((1 + i) * TILE_SIZE, (3 + ind) * TILE_SIZE))
+                if not item.equipped:
+                    surface.blit(tileset.get_tile(ord(letter)), ((1 + i) * TILE_SIZE, (3 + ind) * TILE_SIZE))
+                else:
+                    surface.blit(tileset.get_tile(ord(letter), COLOR_YELLOW), ((1 + i) * TILE_SIZE, (3 + ind) * TILE_SIZE))
+
+
+class ItemMenu(Menu):
+    def __init__(self, target, item):
+        self.target = target
+        self.item = item
